@@ -5,6 +5,45 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
+    <changeSet id="create-comments-table" author="yarek2003">
+        <preConditions>
+            <not>
+                <tableExists tableName="comments"/>
+            </not>
+        </preConditions>
 
+        <createTable tableName="comments">
+            <column name="mk" type="INT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="text" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ad_pk" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                constraintName="fk_comments_ad_id"
+                baseTableName="comments"
+                baseColumnNames="ad_pk"
+                referencedTableName="ads"
+                referencedColumnNames="pk"/>
+
+        <addForeignKeyConstraint
+                constraintName="fk_comments_author_id"
+                baseTableName="comments"
+                baseColumnNames="user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+
+    </changeSet>
 
 </databaseChangeLog>

@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dto.LoginDto;
 import ru.skypro.homework.dto.RegisterDto;
 import ru.skypro.homework.service.AuthService;
 
@@ -21,12 +22,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+    public boolean login(LoginDto loginDto) {
+        if (!manager.userExists(loginDto.getUsername())) {
             return false;
         }
-        UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        UserDetails userDetails = manager.loadUserByUsername(loginDto.getUsername());
+        return encoder.matches(loginDto.getPassword(), userDetails.getPassword());
     }
 
     @Override
