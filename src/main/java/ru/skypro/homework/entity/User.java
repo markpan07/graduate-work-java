@@ -6,10 +6,10 @@ import ru.skypro.homework.dto.Role;
 import javax.persistence.*;
 
 @Data
-@Entity
+@Entity(name = "users")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
     private String firstName;
