@@ -9,7 +9,7 @@
     <changeSet id="create-ads-table" author="GresRoman">
         <preConditions>
             <not>
-                <tableExists tableName="Ads"/>
+                <tableExists tableName="ads"/>
             </not>
         </preConditions>
         <createTable tableName="ads">
