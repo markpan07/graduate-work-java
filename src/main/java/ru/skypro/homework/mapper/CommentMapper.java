@@ -19,13 +19,9 @@ import ru.skypro.homework.entity.User;
 @Service
 public class CommentMapper {
 
-public Comment toEntity (CommentDto dto, CreateOrUpdateCommentDto createOrUpdateCommentDto, User author, Ad ad){
+public Comment toEntity (CreateOrUpdateCommentDto createOrUpdateCommentDto){
     Comment comment = new Comment();
-    comment.setPk(dto.getPk());
-    comment.setCreatedAt(dto.getCreatedAt());
     comment.setText(createOrUpdateCommentDto.getText());
-    comment.setUser(author);
-    comment.setAd(ad);
     return comment;
 }
 
