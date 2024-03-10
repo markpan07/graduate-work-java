@@ -6,6 +6,7 @@ import ru.skypro.homework.dto.Role;
 import javax.persistence.*;
 
 @Data
+
 @Entity(name = "users")
 public class User {
     @Id
