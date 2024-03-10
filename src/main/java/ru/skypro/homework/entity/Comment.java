@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer mk;
+    private Integer pk;
     @JoinColumn()
     @ManyToOne
     Ad ad;
