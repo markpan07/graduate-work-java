@@ -9,12 +9,14 @@ import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UpdateUserDto;
 import ru.skypro.homework.dto.UserDto;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     @PostMapping("/set_password")
-    public ResponseEntity<NewPasswordDto> setPassword(@RequestBody NewPasswordDto dto) {
+    public ResponseEntity<NewPasswordDto> setPassword(@Valid @RequestBody NewPasswordDto dto) {
         return ResponseEntity.ok(dto);
     }
 
@@ -24,12 +26,12 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/me")
-    public ResponseEntity<UpdateUserDto> updateUser(@RequestBody UpdateUserDto dto) {
+    @PatchMapping("/me")
+    public ResponseEntity<UpdateUserDto> updateUser(@Valid @RequestBody UpdateUserDto dto) {
         return ResponseEntity.ok(dto);
     }
 
-    @PutMapping("/me/image")
+    @PatchMapping("/me/image")
     public ResponseEntity<Void> updateUserImage(MultipartFile image) {
         return ResponseEntity.status(HttpStatus.OK).build();
     }

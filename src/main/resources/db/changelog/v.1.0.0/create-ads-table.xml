@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+
+
+    <changeSet id="create-ads-table" author="GresRoman">
+        <preConditions>
+            <not>
+                <tableExists tableName="ads"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ads">
+            <column name="pk" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="image" type="varchar(255)"/>
+            <column name="price" type="int"/>
+            <column name="title" type="varchar(255)"/>
+            <column name="description" type="text"/>
+            <column name="user_id" type="int">
+                <constraints foreignKeyName="ads_user_id_users_id" references="users(id)"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
