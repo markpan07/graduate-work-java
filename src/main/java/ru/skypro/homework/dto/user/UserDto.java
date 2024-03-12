@@ -1,6 +1,4 @@
-package ru.skypro.homework.dto;
-
-import java.util.Objects;
+package ru.skypro.homework.dto.user;
 
 import lombok.Data;
 

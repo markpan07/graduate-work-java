@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.skypro.homework.dto.LoginDto;
-import ru.skypro.homework.dto.RegisterDto;
+import ru.skypro.homework.dto.user.LoginDto;
+import ru.skypro.homework.dto.user.RegisterDto;
 import ru.skypro.homework.service.AuthService;
 
 @Slf4j

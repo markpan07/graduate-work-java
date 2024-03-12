@@ -1,19 +1,9 @@
 package ru.skypro.homework.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.comments.CommentDto;
-import ru.skypro.homework.dto.comments.CommentsDto;
 import ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto;
-import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.Comment;
-import ru.skypro.homework.entity.User;
-
-
 
 
 @Service
