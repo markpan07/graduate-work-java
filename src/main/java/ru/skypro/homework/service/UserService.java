@@ -16,7 +16,7 @@ public interface UserService {
     public UserDto getInfoAboutMe(String username);
     public UpdateUserDto updateInfoAboutMe(String username, UpdateUserDto dto);
     public void updateMyImage(String username, MultipartFile file) throws IOException;
-    public ResponseEntity<User> registerUser(RegisterDto dto);
+    public User registerUser(RegisterDto dto);
 
 
 
