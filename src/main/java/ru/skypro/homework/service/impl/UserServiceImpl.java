@@ -4,6 +4,7 @@ package ru.skypro.homework.service.impl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(NewPasswordDto dto, String username) throws PasswordIsNotCorrectException {
-        User user = userRepository.findByEmail(username);
+        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
         if (encoder.matches(dto.getCurrentPassword(), user.getPassword())) {
             user.setPassword(encoder.encode(dto.getNewPassword()));
             userRepository.save(user);
@@ -54,13 +55,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getInfoAboutMe(String username) {
-        User user = userRepository.findByEmail(username);
+        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
         return userMapper.toDto(user);
     }
 
     @Override
     public UpdateUserDto updateInfoAboutMe(String username, UpdateUserDto dto) {
-        User user = userRepository.findByEmail(username);
+        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhone(dto.getPhone());
@@ -70,13 +71,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateMyImage(String username, MultipartFile file) throws IOException {
-        User user = userRepository.findByEmail(username);
+        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
         uploadImage(user, file);
     }
 
 
     @Override
-    public ResponseEntity<User> registerUser(RegisterDto dto) {
+    public User registerUser(RegisterDto dto) {
         return null;
     }
 
