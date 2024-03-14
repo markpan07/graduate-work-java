@@ -20,6 +20,8 @@ public class UserMapper {
         dto.setRole(user.getRole());
         return dto;
     }
+
+
     
     public User toEntity(RegisterDto dto) {
         User user = new User();
@@ -30,4 +32,5 @@ public class UserMapper {
         user.setRole(dto.getRole());
         return user;
     }
+
 }

@@ -15,6 +15,7 @@ import ru.skypro.homework.dto.user.UpdateUserDto;
 import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.PasswordIsNotCorrectException;
+import ru.skypro.homework.exception.UserAlreadyRegisteredException;
 import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.UserService;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(NewPasswordDto dto, String username) throws PasswordIsNotCorrectException {
-        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
         if (encoder.matches(dto.getCurrentPassword(), user.getPassword())) {
             user.setPassword(encoder.encode(dto.getNewPassword()));
             userRepository.save(user);
@@ -55,13 +56,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getInfoAboutMe(String username) {
-        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
         return userMapper.toDto(user);
     }
 
     @Override
     public UpdateUserDto updateInfoAboutMe(String username, UpdateUserDto dto) {
-        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhone(dto.getPhone());
@@ -71,18 +72,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateMyImage(String username, MultipartFile file) throws IOException {
-        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
         uploadImage(user, file);
     }
 
 
     @Override
     public User registerUser(RegisterDto dto) {
-        return null;
+        if (userRepository.findByEmail(dto.getUsername()).isPresent()) {
+            throw new UserAlreadyRegisteredException(dto.getUsername());
+        } else {
+            User user = userMapper.toEntity(dto);
+            user.setPassword(encoder.encode(dto.getPassword()));
+            return userRepository.save(user);
+        }
     }
 
     public void uploadImage(User user, MultipartFile file) throws IOException {
-        Path path = Path.of(imagePath, user.getEmail() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename())); //TODO:Понять как формируется путь к файлу
+        Path path = Path.of(imagePath, user.getEmail() + "." + StringUtils.getFilenameExtension(file.getOriginalFilename()));
 
 
         Files.createDirectories(path.getParent());
