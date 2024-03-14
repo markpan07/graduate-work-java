@@ -41,7 +41,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean register(RegisterDto registerDto) {
         if(userRepository.findByEmail(registerDto.getUsername()).isPresent()) {
-            throw new UserAlreadyRegisteredException(registerDto.getUsername());
+            return false;
+          //  throw new UserAlreadyRegisteredException(registerDto.getUsername()); TODO:пробросить исключение в контроллер и обработать его статусом BAD_REQUEST
         } else {
             userService.registerUser(registerDto);
             return true;
