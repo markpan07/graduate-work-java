@@ -64,8 +64,8 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public AdsDto getMyAds(Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+    public AdsDto getMyAds(String username) {
+        User user = userRepository.findByEmail(username).orElseThrow();
         return adMapper.toAdsDto(adRepository.findAllByUserId(user.getId()));
     }
 
