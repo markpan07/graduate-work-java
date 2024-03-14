@@ -1,8 +1,8 @@
 package ru.skypro.homework.mapper;
 
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.RegisterDto;
-import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.dto.user.RegisterDto;
+import ru.skypro.homework.dto.user.UserDto;
 import ru.skypro.homework.entity.User;
 
 @Service
@@ -20,6 +20,8 @@ public class UserMapper {
         dto.setRole(user.getRole());
         return dto;
     }
+
+
     
     public User toEntity(RegisterDto dto) {
         User user = new User();
@@ -30,4 +32,5 @@ public class UserMapper {
         user.setRole(dto.getRole());
         return user;
     }
+
 }
