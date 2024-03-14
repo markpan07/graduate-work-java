@@ -56,13 +56,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getInfoAboutMe(String username) {
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found")); //TODO: возможно тут никогда не будет исключения
         return userMapper.toDto(user);
     }
 
     @Override
     public UpdateUserDto updateInfoAboutMe(String username, UpdateUserDto dto) {
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User is not found")); //TODO: возможно тут никогда не будет исключения
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhone(dto.getPhone());

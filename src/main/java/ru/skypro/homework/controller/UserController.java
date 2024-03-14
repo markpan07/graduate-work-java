@@ -1,6 +1,7 @@
 package ru.skypro.homework.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -46,8 +47,8 @@ public class UserController {
         return ResponseEntity.ok(userService.updateInfoAboutMe(authentication.getName(), dto));
     }
 
-    @PatchMapping("/me/image")
-    public ResponseEntity<Void> updateUserImage(MultipartFile image, Authentication authentication) throws IOException {
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateUserImage(@RequestParam MultipartFile image, Authentication authentication) throws IOException {
         userService.updateMyImage(authentication.getName(), image);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
