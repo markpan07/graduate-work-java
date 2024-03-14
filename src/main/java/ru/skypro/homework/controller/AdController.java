@@ -31,8 +31,8 @@ public class AdController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<AdsDto> getAdsMe() {
-        AdsDto dto = new AdsDto();
+    public ResponseEntity<AdsDto> getAdsMe(Authentication authentication) {
+        AdsDto dto = adService.getMyAds(authentication.getName());
         return ResponseEntity.ok(dto);
     }
 
