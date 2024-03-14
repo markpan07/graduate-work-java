@@ -1,7 +1,8 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
-import ru.skypro.homework.dto.Role;
+import org.springframework.beans.factory.annotation.Value;
+import ru.skypro.homework.dto.user.Role;
 
 import javax.persistence.*;
 
@@ -12,13 +13,16 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String password;
     private String email;
     private String firstName;
     private String lastName;
     private String phone;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Value("${path.to.user.image}")
     private String image;
 
 
