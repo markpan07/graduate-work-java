@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,11 @@ public class AuthServiceImpl implements AuthService {
     private final UserServiceImpl userService;
     private final UserRepository userRepository;
 
-    public AuthServiceImpl(UserDetailsManager myUserDetailService,
-                           PasswordEncoder passwordEncoder, UserServiceImpl userService, UserRepository userRepository) {
-        this.myUserDetailService = (MyUserDetailsService) myUserDetailService; //TODO:не понимаю, почему он требует каст
+    public AuthServiceImpl(MyUserDetailsService myUserDetailService,
+                           PasswordEncoder passwordEncoder,
+                           UserServiceImpl userService,
+                           UserRepository userRepository) {
+        this.myUserDetailService = myUserDetailService;
         this.encoder = passwordEncoder;
         this.userService = userService;
         this.userRepository = userRepository;
@@ -31,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean login(LoginDto loginDto) {
 
-        MyUserDetails userDetails = (MyUserDetails) myUserDetailService.loadUserByUsername(loginDto.getUsername()); //TODO:не понимаю, почему он требует каст
+        MyUserDetails userDetails = myUserDetailService.loadUserByUsername(loginDto.getUsername());
         return encoder.matches(loginDto.getPassword(), userDetails.getPassword());
     }
 
