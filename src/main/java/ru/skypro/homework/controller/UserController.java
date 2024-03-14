@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.user.NewPasswordDto;
 import ru.skypro.homework.dto.user.UpdateUserDto;
 import ru.skypro.homework.dto.user.UserDto;
+import ru.skypro.homework.exception.PasswordIsNotCorrectException;
 import ru.skypro.homework.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
@@ -25,12 +26,18 @@ public class UserController {
 
     @PostMapping("/set_password")
     public ResponseEntity<NewPasswordDto> setPassword(@Valid @RequestBody NewPasswordDto dto, Authentication authentication) {
-        userService.updatePassword(dto, authentication.getName());
+        try {
+            userService.updatePassword(dto, authentication.getName());
+        } catch (PasswordIsNotCorrectException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(dto);
+        }
+
         return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUserInfo(Authentication authentication) {
+
         return ResponseEntity.ok(userService.getInfoAboutMe(authentication.getName()));
     }
 
