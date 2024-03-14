@@ -96,6 +96,19 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication) {
+
+            try {
+                Ad ad = getAd(id);
+                ad = uploadImage(ad, image);
+                return Files.readAllBytes(Path.of(ad.getImage()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+    }
+
+    @Override
     public void deleteAd(Integer id, Authentication authentication) {
         adRepository.delete(getAd(id));
     }
