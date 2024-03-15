@@ -6,12 +6,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.ad.ExtendedAdDto;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.User;
+import ru.skypro.homework.exception.AdNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.UserRepository;
@@ -34,7 +36,7 @@ public class AdServiceImpl implements AdService {
     private final UserRepository userRepository;
 
     @Override
-    public AdDto createAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException {
+    public AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
         Ad ad = adMapper.toEntity(createOrUpdateAdDto);
         ad.setUser(user);
@@ -64,14 +66,14 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public AdsDto getMyAds(Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+    public AdsDto getMyAds(String username) {
+        User user = userRepository.findByEmail(username).orElseThrow();
         return adMapper.toAdsDto(adRepository.findAllByUserId(user.getId()));
     }
 
     @Override
     public Ad getAd(Integer id) {
-        return adRepository.findById(id).orElseThrow();
+        return adRepository.findById(id).orElseThrow(() -> new AdNotFoundException(id));
     }
 
     @Override
@@ -96,8 +98,24 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public void deleteAd(Integer id, Authentication authentication) {
-        adRepository.delete(getAd(id));
+    public byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication) {
+        try {
+            Ad ad = getAd(id);
+            ad = uploadImage(ad, image);
+            return Files.readAllBytes(Path.of(ad.getImage()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void deleteAd(Integer id, Authentication authentication) throws NotFoundException {
+        if (adRepository.existsById(id)) {
+            adRepository.delete(getAd(id));
+        } else {
+            throw new NotFoundException("Ad is not found");
+        }
     }
 
 

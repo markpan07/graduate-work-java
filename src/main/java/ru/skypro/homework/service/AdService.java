@@ -13,20 +13,14 @@ import java.io.IOException;
 public interface AdService {
 
 
-    AdDto createAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException;
-
+    AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException;
     AdsDto getAll();
-
-    AdsDto getMyAds(Authentication authentication);
-
+    AdsDto getMyAds(String username);
     Ad getAd(Integer id);
-
     byte[] getImage(Integer id) throws IOException;
-
     ExtendedAdDto getExtendedAd(Integer id);
-
     AdDto updateAd(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto, Authentication authentication);
-
+    byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication);
     void deleteAd(Integer id, Authentication authentication);
 
 
