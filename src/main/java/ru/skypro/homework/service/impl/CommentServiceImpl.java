@@ -3,7 +3,6 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.Role;
 import ru.skypro.homework.dto.comments.CommentDto;
 import ru.skypro.homework.dto.comments.CommentsDto;
 import ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto;
@@ -31,46 +30,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentsDto getComments(Integer adPk) {
-        List<CommentDto> comments = commentRepository.findByAdPk(adPk)
-                .stream()
-                .map(commentMapper::toCommentDto)
-                .collect(Collectors.toList());
-        return new CommentsDto(comments.size(), comments);
+        return commentMapper.toCommentsDto(commentRepository.findByAdPk(adPk));
+
     }
 
 
     public CommentDto addComment(Integer pk, CreateOrUpdateCommentDto dto, Authentication authentication) {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
         Ad ad = adsRepository.findById(pk).orElse(null);
-
-        //Создаем сущность comment и заполняем поля
-        Comment comment = new Comment();
+        Comment comment = commentMapper.toEntity(dto);
         comment.setUser(user);
         comment.setAd(ad);
         comment.setText(dto.getText());
         comment.setCreatedAt(System.currentTimeMillis());
-
-        //Сохраняем сущность commentEntity в БД
-        commentRepository.save(comment);
-
-        //Заполняем поле с комментариями у пользователя и сохраняем в БД
-       // user..add(commentEntity);
-     //   userRepository.save(user);
-
-        //Создаем возвращаемую сущность ДТО comment и заполняем поля
-        CommentDto commentDto = new CommentDto();
-        commentDto.setAuthor(user.getId());
-
-        String avatar = user.getImage();
-        commentDto.setAuthorImage(avatar);
-
-        commentDto.setAuthorFirstName(user.getFirstName());
-        commentDto.setCreatedAt(comment.getCreatedAt());
-        commentDto.setPk(commentRepository.findFirstByText(dto.getText()).getPk());
-        commentDto.setText(commentRepository.findFirstByText(dto.getText()).getText());
-
-        return commentDto;
+        return commentMapper.toCommentDto(commentRepository.save(comment));
     }
+
 
 
     @Override
@@ -78,11 +53,9 @@ public class CommentServiceImpl implements CommentService {
                                  Integer commentId,
                                  CreateOrUpdateCommentDto createOrUpdateCommentDto, Authentication authentication) {
 
-
-        Comment comment = commentRepository.findById(commentId).get();
+        Comment comment = getComment(commentId);
         comment.setText(createOrUpdateCommentDto.getText());
-        commentRepository.save(comment);
-        return commentMapper.toCommentDto(comment);
+        return commentMapper.toCommentDto(commentRepository.save(comment));
     }
     @Override
     public Comment getComment(Integer pk) {
@@ -90,7 +63,6 @@ public class CommentServiceImpl implements CommentService {
     }
     @Override
     public void deleteComment(Integer adId, Integer commentId, Authentication authentication) {
-
-        commentRepository.deleteByPkAndAdPk(adId,commentId);
+        commentRepository.delete(getComment(commentId));
     }
 }

@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.UserDto;
+
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.comments.CommentDto;
@@ -40,6 +40,17 @@ public CommentDto toCommentDto(Comment comment){
     return commentDto;
 }
 
+    public CommentsDto toCommentsDto(List<Comment> comments) {
+        CommentsDto commentsDto = new CommentsDto();
+        List<CommentDto> commentDtoList = comments.stream()
+                .map(this::toCommentDto)
+                .collect(Collectors.toList());
+
+        commentsDto.setCount(commentDtoList.size());
+        commentsDto.setResult(commentDtoList);
+
+        return commentsDto;
+    }
 
 
 

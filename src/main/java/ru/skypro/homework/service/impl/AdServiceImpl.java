@@ -27,7 +27,7 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class AdServiceImpl implements AdService {
 
-    @Value("${path.to.ad.photo}")
+ //   @Value("${path.to.ad.photo}")
     private String photoPath;
     private final AdMapper adMapper;
     private final AdRepository adRepository;

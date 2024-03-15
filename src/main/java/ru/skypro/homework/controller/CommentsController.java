@@ -93,11 +93,14 @@ public class CommentsController {
     )
 
     @PostMapping("/{id}/comments")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
-    public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
+    /*   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+     public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
                                                  @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                  Authentication authentication) {
         return ResponseEntity.ok(commentService.addComment(id, createOrUpdateCommentDto, authentication));
+    }*/
+    public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id, @RequestBody CommentDto dto) {
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(
@@ -127,11 +130,15 @@ public class CommentsController {
             }
     )
     @DeleteMapping("/{adId}/comments/{commentId}")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+   /* @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
     public ResponseEntity<?> deleteComment (@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
             commentService.deleteComment(adId, commentId, authentication);
             return ResponseEntity.ok().build();
 
+    }
+    */
+    public ResponseEntity<?>  deleteComment (@PathVariable int adId, @PathVariable int commentId) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     @Operation(
             tags = "Комментарии",
@@ -160,10 +167,14 @@ public class CommentsController {
             }
     )
     @PatchMapping("{adId}/comments/{commentId}")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+  /*  @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId,
                                                                   @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                                   Authentication authentication) {
         return ResponseEntity.ok(commentService.updateComment(adId, commentId, createOrUpdateCommentDto, authentication));
+    }*/
+    public ResponseEntity<CreateOrUpdateCommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
+        CreateOrUpdateCommentDto dto = new CreateOrUpdateCommentDto();
+        return ResponseEntity.ok(dto);
     }
 }
