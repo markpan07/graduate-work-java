@@ -16,7 +16,8 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
-        dto.setImage(user.getImage());
+        dto.setImage("/users/" + user.getEmail() + "/image");
+        //dto.setImage(user.getImage());
         dto.setRole(user.getRole());
         return dto;
     }

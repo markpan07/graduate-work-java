@@ -9,7 +9,7 @@ import ru.skypro.homework.dto.ad.CreateOrUpdateAdDto;
 import ru.skypro.homework.dto.comments.CommentDto;
 import ru.skypro.homework.dto.comments.CommentsDto;
 import ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto;
-
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads")
 public class CommentsController {
