@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAdDto;
@@ -40,12 +41,12 @@ public class AdController {
         return ResponseEntity.ok(adService.getExtendedAd(id));
     }
 
-    @GetMapping(name = "{id}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "{id}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable Integer id) throws IOException {
         return ResponseEntity.ok(adService.getImage(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<AdDto> addAd(@RequestPart(value = "properties") CreateOrUpdateAdDto createOrUpdateAdDto,
                                        @RequestPart(value = "image") MultipartFile image,
                                        Authentication authentication) throws IOException {
@@ -59,16 +60,21 @@ public class AdController {
         return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDto, authentication));
     }
 
-    @PatchMapping(name = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
                                                 @RequestParam MultipartFile image,
                                                 Authentication authentication) {
+        System.out.println("vizvam");
         return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAds(@PathVariable Integer id, Authentication authentication) {
-        adService.deleteAd(id, authentication);
+        try {
+            adService.deleteAd(id, authentication);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
