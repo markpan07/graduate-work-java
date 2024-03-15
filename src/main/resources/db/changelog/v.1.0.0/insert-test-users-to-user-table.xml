@@ -8,8 +8,8 @@
 
     <changeSet id="insert-test-users-to-user-table" author="PankovMark">
         <insert tableName="users">
-            <column name="email" value="testUsername1"/>
-            <column name="password" value="testPassword1"/>
+            <column name="email" value="username@gmail.com"/>
+            <column name="password" value="$2a$10$8HYimNmQ9HpQ7HIKjxual./3PYdSQYGp.veg/3DkQfssyudrMZYly"/>
             <column name="first_name" value="testName1"/>
             <column name="last_name" value="testLastName1"/>
             <column name="phone" value="testPhone1"/>
