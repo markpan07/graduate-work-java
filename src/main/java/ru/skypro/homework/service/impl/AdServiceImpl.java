@@ -34,7 +34,7 @@ public class AdServiceImpl implements AdService {
     private final UserRepository userRepository;
 
     @Override
-    public AdDto createAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException {
+    public AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
         Ad ad = adMapper.toEntity(createOrUpdateAdDto);
         ad.setUser(user);
