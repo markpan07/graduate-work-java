@@ -21,7 +21,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Value("${path.to.user.image}")
+    @Value("${path.to.user.images}")
     private String image;
 
 
