@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,7 +38,7 @@ public class AdController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExtendedAdDto> getAds(@PathVariable Integer id) {
+    public ResponseEntity<ExtendedAdDto> getAd(@PathVariable Integer id) {
         return ResponseEntity.ok(adService.getExtendedAd(id));
     }
 
@@ -53,22 +54,27 @@ public class AdController {
         return ResponseEntity.status(HttpStatus.CREATED).body(adService.addAd(createOrUpdateAdDto, image, authentication));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or @adServiceImpl.getAd(#id).user.email == authentication.principal.username")
     @PatchMapping("/{id}")
-    public ResponseEntity<AdDto> updateAds(@PathVariable Integer id,
-                                                         @RequestBody CreateOrUpdateAdDto createOrUpdateAdDto,
-                                                         Authentication authentication) {
+    public ResponseEntity<AdDto> updateAd(@PathVariable Integer id,
+                                          @RequestBody CreateOrUpdateAdDto createOrUpdateAdDto,
+                                          Authentication authentication) {
         return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDto, authentication));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or @adServiceImpl.getAd(#id).user.email == authentication.principal.username")
     @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
                                                 @RequestParam MultipartFile image,
                                                 Authentication authentication) {
-         return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
+
+        return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
+
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or @adServiceImpl.getAd(#id).user.email == authentication.principal.username")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAds(@PathVariable Integer id, Authentication authentication) {
+    public ResponseEntity<?> deleteAd(@PathVariable Integer id, Authentication authentication) {
         try {
             adService.deleteAd(id, authentication);
         } catch (NotFoundException e) {
