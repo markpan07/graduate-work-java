@@ -64,8 +64,7 @@ public class AdController {
     public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
                                                 @RequestParam MultipartFile image,
                                                 Authentication authentication) {
-        System.out.println("vizvam");
-        return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
+         return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
     }
 
     @DeleteMapping("/{id}")

@@ -56,6 +56,9 @@ public class UserServiceImpl implements UserService {
     public byte[] getImage(String username) {
         try {
             User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username is not found"));
+            if (user.getImage() == null) {
+                user.setImage("/market/users/images/default-image.jpg");
+            }
             return Files.readAllBytes(Path.of(user.getImage()));
         } catch (IOException e) {
             throw new RuntimeException(e); // TODO: сделать exception
