@@ -31,7 +31,7 @@ public class AdMapper {
                 .collect(Collectors.toList());
 
         adsDto.setCount(adDtoList.size());
-        adsDto.setResult(adDtoList);
+        adsDto.setResults(adDtoList);
 
         return adsDto;
     }
