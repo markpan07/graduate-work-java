@@ -14,7 +14,7 @@ import ru.skypro.homework.service.impl.UserServiceImpl;
 
 import javax.validation.Valid;
 import java.io.IOException;
-
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -38,7 +38,6 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUserInfo(Authentication authentication) {
-
         return ResponseEntity.ok(userService.getInfoAboutMe(authentication.getName()));
     }
 
@@ -52,5 +51,11 @@ public class UserController {
         userService.updateMyImage(authentication.getName(), image);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    @GetMapping(value = "{username}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getUserImage(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getImage(username));
+    }
+
 
 }

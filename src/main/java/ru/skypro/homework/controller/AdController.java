@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAdDto;
@@ -14,7 +15,7 @@ import ru.skypro.homework.dto.ad.ExtendedAdDto;
 import ru.skypro.homework.service.AdService;
 
 import java.io.IOException;
-
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
@@ -26,8 +27,7 @@ public class AdController {
 
     @GetMapping
     public ResponseEntity<AdsDto> getAllAds() {
-        AdsDto dto = new AdsDto();
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(adService.getAll());
     }
 
     @GetMapping("/me")
@@ -38,37 +38,42 @@ public class AdController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ExtendedAdDto> getAds(@PathVariable Integer id) {
-        ExtendedAdDto dto = new ExtendedAdDto();
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(adService.getExtendedAd(id));
     }
 
-    @GetMapping(name = "{id}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "{id}/image", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> getImage(@PathVariable Integer id) throws IOException {
         return ResponseEntity.ok(adService.getImage(id));
     }
 
-    @PostMapping
-    public ResponseEntity<AdDto> addAd(@RequestBody AdDto dto) {
-        return ResponseEntity.ok(dto);
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<AdDto> addAd(@RequestPart(value = "properties") CreateOrUpdateAdDto createOrUpdateAdDto,
+                                       @RequestPart(value = "image") MultipartFile image,
+                                       Authentication authentication) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adService.addAd(createOrUpdateAdDto, image, authentication));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CreateOrUpdateAdDto> updateAds(@PathVariable Integer id) {
-        CreateOrUpdateAdDto dto = new CreateOrUpdateAdDto();
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<AdDto> updateAds(@PathVariable Integer id,
+                                                         @RequestBody CreateOrUpdateAdDto createOrUpdateAdDto,
+                                                         Authentication authentication) {
+        return ResponseEntity.ok(adService.updateAd(id, createOrUpdateAdDto, authentication));
     }
 
-    @PatchMapping("/{id}/image")
-    public ResponseEntity<Void> updateImage(@PathVariable Integer id, MultipartFile image) {
-        return ResponseEntity.status(HttpStatus.OK).build();
+    @PatchMapping(value = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
+                                                @RequestParam MultipartFile image,
+                                                Authentication authentication) {
+         return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
     }
 
-    @PatchMapping(name = "{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id, @RequestParam MultipartFile image, Authentication authentication) {
-        return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
-    }
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAds(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteAds(@PathVariable Integer id, Authentication authentication) {
+        try {
+            adService.deleteAd(id, authentication);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
