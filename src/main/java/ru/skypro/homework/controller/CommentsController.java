@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.webjars.NotFoundException;
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
 import ru.skypro.homework.dto.ad.CreateOrUpdateAdDto;
@@ -62,9 +63,9 @@ public class CommentsController {
             }
     )
     @GetMapping("/{id}/comments")
+    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
     public ResponseEntity<CommentsDto> getAllComments(@PathVariable Integer id) {
-        CommentsDto dto = new CommentsDto();
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(
@@ -93,16 +94,16 @@ public class CommentsController {
     )
 
     @PostMapping("/{id}/comments")
-    /*   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
-     public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
+     @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+       public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
                                                  @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                  Authentication authentication) {
         return ResponseEntity.ok(commentService.addComment(id, createOrUpdateCommentDto, authentication));
-    }*/
-    public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id, @RequestBody CommentDto dto) {
-        return ResponseEntity.ok(dto);
     }
-
+    /*  public ResponseEntity<CreateOrUpdateCommentDto> addComment(@PathVariable("id") Integer id, @RequestBody CreateOrUpdateCommentDto dto) {
+          return ResponseEntity.ok(dto);
+      }
+  */
     @Operation(
             tags = "Комментарии",
             summary = "Удаление комментария",
@@ -130,16 +131,20 @@ public class CommentsController {
             }
     )
     @DeleteMapping("/{adId}/comments/{commentId}")
-   /* @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
-    public ResponseEntity<?> deleteComment (@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
+    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication.getName(), #adId)")
+   public ResponseEntity<?> deleteComment (@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
+        try {
             commentService.deleteComment(adId, commentId, authentication);
-            return ResponseEntity.ok().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
-    */
+    /*
     public ResponseEntity<?>  deleteComment (@PathVariable int adId, @PathVariable int commentId) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+    }*/
     @Operation(
             tags = "Комментарии",
             summary = "Обновление комментария",
@@ -167,14 +172,20 @@ public class CommentsController {
             }
     )
     @PatchMapping("{adId}/comments/{commentId}")
-  /*  @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId,
                                                                   @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                                   Authentication authentication) {
+        try {
+        commentService.updateComment(adId, commentId, createOrUpdateCommentDto, authentication);
+        } catch (NotFoundException e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(commentService.updateComment(adId, commentId, createOrUpdateCommentDto, authentication));
-    }*/
-    public ResponseEntity<CreateOrUpdateCommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
+    }
+  /*   public ResponseEntity<CreateOrUpdateCommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         CreateOrUpdateCommentDto dto = new CreateOrUpdateCommentDto();
         return ResponseEntity.ok(dto);
-    }
+    }*/
 }

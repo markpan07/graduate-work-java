@@ -1,8 +1,10 @@
 package ru.skypro.homework.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 import ru.skypro.homework.dto.comments.CommentDto;
 import ru.skypro.homework.dto.comments.CommentsDto;
 import ru.skypro.homework.dto.comments.CreateOrUpdateCommentDto;
@@ -51,18 +53,26 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDto updateComment(Integer adPk,
                                  Integer commentId,
-                                 CreateOrUpdateCommentDto createOrUpdateCommentDto, Authentication authentication) {
-
+                                 CreateOrUpdateCommentDto createOrUpdateCommentDto,
+                                 Authentication authentication) throws NotFoundException{
+        if (commentRepository.existsById(commentId)){
         Comment comment = getComment(commentId);
         comment.setText(createOrUpdateCommentDto.getText());
-        return commentMapper.toCommentDto(commentRepository.save(comment));
+        return commentMapper.toCommentDto(commentRepository.save(comment));}
+        else {
+            throw new NotFoundException("Comment is not found");}
     }
     @Override
     public Comment getComment(Integer pk) {
         return commentRepository.findById(pk).orElseThrow();
     }
     @Override
-    public void deleteComment(Integer adId, Integer commentId, Authentication authentication) {
-        commentRepository.delete(getComment(commentId));
+    public void deleteComment(Integer adId, Integer commentId, Authentication authentication) throws NotFoundException {
+        if (commentRepository.existsById(commentId)) {
+            commentRepository.delete(getComment(commentId));
+        } else {
+            throw new NotFoundException("Comment is not found");
+        }
+
     }
 }
