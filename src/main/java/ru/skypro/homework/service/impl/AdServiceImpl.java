@@ -40,6 +40,7 @@ public class AdServiceImpl implements AdService {
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
         Ad ad = adMapper.toEntity(createOrUpdateAdDto);
         ad.setUser(user);
+        ad = adRepository.save(ad);
         return adMapper.toAdDto(adRepository.save(uploadImage(ad, image)));
     }
 
