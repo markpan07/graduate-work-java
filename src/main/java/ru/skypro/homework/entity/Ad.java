@@ -1,9 +1,10 @@
 package ru.skypro.homework.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-
+@EqualsAndHashCode(of = "pk")
 @Data
 @Entity(name = "ads")
 public class Ad {

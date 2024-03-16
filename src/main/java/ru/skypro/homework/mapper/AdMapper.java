@@ -1,6 +1,5 @@
 package ru.skypro.homework.mapper;
 
-
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.ad.AdDto;
 import ru.skypro.homework.dto.ad.AdsDto;
@@ -10,9 +9,8 @@ import ru.skypro.homework.entity.Ad;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
+
 public class AdMapper {
-
-
 
     public AdDto toAdDto(Ad ad) {
         AdDto adDto = new AdDto();
@@ -64,4 +62,6 @@ public class AdMapper {
 
         return extendedAdDto;
     }
+
+
 }

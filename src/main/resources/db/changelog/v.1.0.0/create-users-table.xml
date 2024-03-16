@@ -36,7 +36,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="image" type="varchar(255)">
-                <constraints nullable="false"/>
+               <!-- <constraints nullable="false"/>-->
             </column>
         </createTable>
     </changeSet>

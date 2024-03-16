@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class DataValidationErrorHandler extends RuntimeException {
 
+
+    //TODO: написать обработку исключения с некорреткным паролем PasswordIsNotCorrectException
+
     @ResponseBody
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -31,7 +34,7 @@ public class DataValidationErrorHandler extends RuntimeException {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ValidationErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         final List<Violation> violationsList = e.getBindingResult().getFieldErrors().stream()
