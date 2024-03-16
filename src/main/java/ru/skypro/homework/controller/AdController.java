@@ -67,7 +67,9 @@ public class AdController {
     public ResponseEntity<byte[]> updateAdImage(@PathVariable Integer id,
                                                 @RequestParam MultipartFile image,
                                                 Authentication authentication) {
+
         return ResponseEntity.ok(adService.updateAdImage(id, image, authentication));
+
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or @adServiceImpl.getAd(#id).user.email == authentication.principal.username")
