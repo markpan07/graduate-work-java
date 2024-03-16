@@ -24,6 +24,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
 
 @Service
 @RequiredArgsConstructor
@@ -50,13 +52,13 @@ public class AdServiceImpl implements AdService {
         Files.deleteIfExists(filePath);
         try (
                 InputStream is = image.getInputStream();
-                OutputStream os = Files.newOutputStream(filePath);
-                BufferedInputStream bis = new BufferedInputStream(is, 512);
-                BufferedOutputStream bos = new BufferedOutputStream(os, 512)
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
         ) {
             bis.transferTo(bos);
             ad.setImage(filePath.toString());
-            return ad;
+            return adRepository.save(ad);
         }
 
     }
