@@ -63,9 +63,13 @@ public class CommentsController {
             }
     )
     @GetMapping("/{id}/comments")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
-    public ResponseEntity<CommentsDto> getAllComments(@PathVariable Integer id) {
-        return ResponseEntity.ok(commentService.getComments(id));
+  //  @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+    public ResponseEntity<CommentsDto> getAllComments(@PathVariable Integer id, Authentication authentication) {
+        if (authentication.getName() != null) {
+            return ResponseEntity.ok(commentService.getComments(id,authentication));
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @Operation(
@@ -94,7 +98,7 @@ public class CommentsController {
     )
 
     @PostMapping("/{id}/comments")
-     @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+  //   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
        public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
                                                  @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                  Authentication authentication) {
@@ -131,7 +135,7 @@ public class CommentsController {
             }
     )
     @DeleteMapping("/{adId}/comments/{commentId}")
-    @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication.getName(), #adId)")
+    @PreAuthorize("hasAuthority('ADMIN') or @commentServiceImpl.getComment(#commentId).user.email == authentication.principal.username")
    public ResponseEntity<?> deleteComment (@PathVariable int adId, @PathVariable int commentId, Authentication authentication) {
         try {
             commentService.deleteComment(adId, commentId, authentication);

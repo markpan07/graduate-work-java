@@ -31,7 +31,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public CommentsDto getComments(Integer adPk) {
+    public CommentsDto getComments(Integer adPk, Authentication authentication) {
         return commentMapper.toCommentsDto(commentRepository.findByAdPk(adPk));
 
     }
