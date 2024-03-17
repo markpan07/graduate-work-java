@@ -32,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
     @Value("${path.to.user.images}")
     private String imagePath;
+    @Value("${path.to.default.user.image}")
+    private String pathToDefaultUserImage;
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder encoder) {
         this.userRepository = userRepository;
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         try {
             User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Username is not found"));
             if (user.getImage() == null) {
-                user.setImage("/market/users/images/default-image.jpg");
+                user.setImage(pathToDefaultUserImage);
             }
             return Files.readAllBytes(Path.of(user.getImage()));
         } catch (IOException e) {
