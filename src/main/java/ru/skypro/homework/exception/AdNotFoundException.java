@@ -10,6 +10,6 @@ public class AdNotFoundException extends NotFoundException {
     }
     @Override
     public String getMessage() {
-        return "Ad is not found!";
+        return "Ad with id: " + id + " is not found!";
     }
 }

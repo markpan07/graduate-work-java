@@ -20,7 +20,7 @@ public interface AdService {
     byte[] getImage(Integer id) throws IOException;
     ExtendedAdDto getExtendedAd(Integer id);
     AdDto updateAd(Integer id, CreateOrUpdateAdDto createOrUpdateAdDto, Authentication authentication);
-    byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication);
+    byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication) throws IOException;
     void deleteAd(Integer id, Authentication authentication);
 
 
