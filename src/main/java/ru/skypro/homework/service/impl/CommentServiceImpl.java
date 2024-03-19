@@ -32,12 +32,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentsDto getComments(Integer adPk, Authentication authentication) {
-        return commentMapper.toCommentsDto(commentRepository.findByAdPk(adPk));
-
+        if (adsRepository.existsById(adPk)) {
+            return commentMapper.toCommentsDto(commentRepository.findByAdPk(adPk));
+        }
+        else {
+            throw new NotFoundException("Ad is not found");}
     }
 
 
     public CommentDto addComment(Integer pk, CreateOrUpdateCommentDto dto, Authentication authentication) {
+        if (adsRepository.existsById(pk)){
         User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
         Ad ad = adsRepository.findById(pk).orElse(null);
         Comment comment = commentMapper.toEntity(dto);
@@ -45,7 +49,9 @@ public class CommentServiceImpl implements CommentService {
         comment.setAd(ad);
         comment.setText(dto.getText());
         comment.setCreatedAt(System.currentTimeMillis());
-        return commentMapper.toCommentDto(commentRepository.save(comment));
+        return commentMapper.toCommentDto(commentRepository.save(comment));}
+         else {
+                throw new NotFoundException("Ad is not found");}
     }
 
 
