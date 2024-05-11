@@ -3,6 +3,7 @@ package ru.skypro.homework.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import ru.skypro.homework.dto.ad.ExtendedAdDto;
 import ru.skypro.homework.entity.Ad;
 import ru.skypro.homework.entity.User;
 import ru.skypro.homework.exception.AdNotFoundException;
+import ru.skypro.homework.exception.UserNotFoundException;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
 import ru.skypro.homework.repository.UserRepository;
@@ -23,6 +25,8 @@ import java.io.IOException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 
 @Service
@@ -37,7 +41,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdDto addAd(CreateOrUpdateAdDto createOrUpdateAdDto, MultipartFile image, Authentication authentication) throws IOException {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(RuntimeException::new);
+        User user = userRepository.findByEmail(authentication.getName()).orElseThrow(()-> new UsernameNotFoundException(authentication.getName()));
         Ad ad = adMapper.toEntity(createOrUpdateAdDto);
         ad.setUser(user);
         ad = adRepository.save(ad);
@@ -50,13 +54,13 @@ public class AdServiceImpl implements AdService {
         Files.deleteIfExists(filePath);
         try (
                 InputStream is = image.getInputStream();
-                OutputStream os = Files.newOutputStream(filePath);
-                BufferedInputStream bis = new BufferedInputStream(is, 512);
-                BufferedOutputStream bos = new BufferedOutputStream(os, 512)
+                OutputStream os = Files.newOutputStream(filePath, CREATE_NEW);
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
         ) {
             bis.transferTo(bos);
             ad.setImage(filePath.toString());
-            return ad;
+            return adRepository.save(ad);
         }
 
     }
@@ -68,7 +72,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdsDto getMyAds(String username) {
-        User user = userRepository.findByEmail(username).orElseThrow();
+        User user = userRepository.findByEmail(username).orElseThrow(()-> new UsernameNotFoundException(username));
         return adMapper.toAdsDto(adRepository.findAllByUserId(user.getId()));
     }
 
@@ -99,23 +103,21 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication) {
-        try {
+    public byte[] updateAdImage(Integer id, MultipartFile image, Authentication authentication) throws IOException {
+
             Ad ad = getAd(id);
             ad = uploadImage(ad, image);
             return Files.readAllBytes(Path.of(ad.getImage()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
 
     }
 
     @Override
-    public void deleteAd(Integer id, Authentication authentication) throws NotFoundException {
+    public void deleteAd(Integer id, Authentication authentication) throws AdNotFoundException {
         if (adRepository.existsById(id)) {
             adRepository.delete(getAd(id));
         } else {
-            throw new NotFoundException("Ad is not found");
+            throw new AdNotFoundException(id);
         }
     }
 

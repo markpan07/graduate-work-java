@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.persistence.*;
 @EqualsAndHashCode(of = "pk")
 @Data
-@Entity(name = "ads")
+@Entity
+@Table(name = "ads")
+
 public class Ad {
 
     @Id

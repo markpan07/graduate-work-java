@@ -63,13 +63,15 @@ public class CommentsController {
             }
     )
     @GetMapping("/{id}/comments")
-  //  @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommentsDto> getAllComments(@PathVariable Integer id, Authentication authentication) {
-        if (authentication.getName() != null) {
-            return ResponseEntity.ok(commentService.getComments(id,authentication));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        try {
+            commentService.getComments(id,authentication);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        return ResponseEntity.ok(commentService.getComments(id,authentication));
+
     }
 
     @Operation(
@@ -98,10 +100,15 @@ public class CommentsController {
     )
 
     @PostMapping("/{id}/comments")
-  //   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+    @PreAuthorize("isAuthenticated()")
        public ResponseEntity<CommentDto> addComment(@PathVariable("id") Integer id,
                                                  @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                  Authentication authentication) {
+        try {
+            commentService.addComment(id, createOrUpdateCommentDto, authentication);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
         return ResponseEntity.ok(commentService.addComment(id, createOrUpdateCommentDto, authentication));
     }
     /*  public ResponseEntity<CreateOrUpdateCommentDto> addComment(@PathVariable("id") Integer id, @RequestBody CreateOrUpdateCommentDto dto) {
@@ -176,7 +183,7 @@ public class CommentsController {
             }
     )
     @PatchMapping("{adId}/comments/{commentId}")
-   @PreAuthorize(value = "hasRole('ADMIN') or @adServiceImpl.isAuthorAd(authentication, #adId)")
+    @PreAuthorize("hasAuthority('ADMIN') or @commentServiceImpl.getComment(#commentId).user.email == authentication.principal.username")
     public ResponseEntity<CommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId,
                                                                   @RequestBody CreateOrUpdateCommentDto createOrUpdateCommentDto,
                                                                   Authentication authentication) {
@@ -188,8 +195,5 @@ public class CommentsController {
         }
         return ResponseEntity.ok(commentService.updateComment(adId, commentId, createOrUpdateCommentDto, authentication));
     }
-  /*   public ResponseEntity<CreateOrUpdateCommentDto> updateComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
-        CreateOrUpdateCommentDto dto = new CreateOrUpdateCommentDto();
-        return ResponseEntity.ok(dto);
-    }*/
+
 }
